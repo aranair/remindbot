@@ -2,11 +2,13 @@ package remindbot
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	s "strings"
 
-	"github.com/gorilla/context"
-	"github.com/julienschmidt/httprouter"
+	"github.com/lib/pq"
 )
 
 type AppContext struct {
@@ -17,15 +19,36 @@ func NewAppContext(db *sql.DB) AppContext {
 	return AppContext{db: db}
 }
 
-func (ac *AppContext) CreateHandler(w http.ResponseWriter, r *http.Request) {
+type Update struct {
+	Id  int64   `json:"update_id"`
+	Msg Message `json:"message"`
+}
 
-	query := r.URL.Query()
-	if len(query.Get("location")) > 0 {
-		lq := query.Get("location")[0]
-		fmt.Fprint(w, "Your location query: ", lq)
+type Message struct {
+	Id   int64  `json:"message_id"`
+	Text string `json:"text"`
+}
+
+func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
+	var update Update
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&update); err != nil {
+		log.Println(err)
+	} else {
+		log.Println(update.Msg.Text)
 	}
 
-	fmt.Println(context.Get(r, "params"))
-	params := context.Get(r, "params").(httprouter.Params)
-	fmt.Println(params.ByName("location"))
+	arr := s.Split(update.Msg.Text, " ")
+	cmd := arr[0]
+	txt := s.Join(arr[1:len(arr)], " ")
+
+	fmt.Println(cmd)
+	fmt.Println(txt)
+
+	_, err := ac.db.Exec(`INSERT INTO reminders(content) VALUES ($1)`, txt)
+
+	if err, ok := err.(*pq.Error); ok {
+		fmt.Println("pq error:", err.Code.Name())
+	}
 }
