@@ -1,11 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"net/http"
-
-	"database/sql"
 
 	rb "github.com/aranair/remindbot"
 	"github.com/aranair/remindbot/config"
@@ -29,16 +28,17 @@ func main() {
 	}
 	fmt.Println(conf)
 
-	pqStr := "user=" + conf.DB.User + " password='" + conf.DB.Password + "' dbname=remindbot host=localhost sslmode=disable"
-	fmt.Println(pqStr)
+	// pqStr := "user=" + conf.DB.User + " password='" + conf.DB.Password + "' dbname=remindbot host=localhost sslmode=disable"
+	// fmt.Println(pqStr)
 
-	db, err := sql.Open("postgres", pqStr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	// db, err := sql.Open("postgres", pqStr)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer db.Close()
 
-	ac := rb.NewAppContext(db, conf)
+	buf := bytes.NewBuffer(nil)
+	ac := rb.NewAppContext(nil, conf, buf)
 	stack := alice.New()
 
 	r := router.New()

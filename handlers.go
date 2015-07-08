@@ -1,6 +1,7 @@
 package remindbot
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -33,10 +34,11 @@ type Chat struct {
 type AppContext struct {
 	db   *sql.DB
 	conf config.Config
+	buf  *bytes.Buffer
 }
 
-func NewAppContext(db *sql.DB, conf config.Config) AppContext {
-	return AppContext{db: db, conf: conf}
+func NewAppContext(db *sql.DB, conf config.Config, buf *bytes.Buffer) AppContext {
+	return AppContext{db: db, conf: conf, buf: buf}
 }
 
 func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,13 +60,18 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	switch cmd {
 	case "remind":
 		txt := s.Join(arr[1:len(arr)], " ")
+		b := []byte(txt + "\n")
+
 		fmt.Println("Text: ", txt)
-		ac.save(txt)
+		if _, err := ac.buf.Write(b); err != nil {
+			fmt.Println("Write error.")
+		}
+		// ac.save(txt)
 	case "list":
-		ac.list(chatId)
+		ac.listBuf(chatId)
 	case "clear":
 		// id := s.Join(arr[1:len(arr)], " ")
-		// ac.clear(id)
+		ac.buf.Reset()
 	default:
 		fmt.Println("Invalid command.")
 	}
@@ -86,6 +93,35 @@ func (ac *AppContext) clear(id int) {
 	}
 }
 
+func (ac *AppContext) listBuf(chatId int64) {
+	buf := ac.buf
+	var data []byte
+	var s []byte
+	for {
+		data, _ = buf.ReadBytes('\n')
+		if len(data) == 0 {
+			break
+		}
+		s = append(s, data...)
+	}
+	ac.sendText(chatId, string(s))
+}
+
+func (ac *AppContext) sendText(chatId int64, text string) {
+	link := "https://api.telegram.org/{botId}:{apiKey}/sendMessage?chat_id={chatId}&text={text}"
+	link = s.Replace(link, "{botId}", ac.conf.BOT.BotId, -1)
+	link = s.Replace(link, "{apiKey}", ac.conf.BOT.ApiKey, -1)
+	link = s.Replace(link, "{chatId}", strconv.FormatInt(chatId, 10), -1)
+	if len(text) < 5 {
+		link = s.Replace(link, "{text}", url.QueryEscape("No current reminders."), -1)
+	} else {
+		link = s.Replace(link, "{text}", url.QueryEscape(text), -1)
+	}
+	fmt.Println(link)
+
+	_, _ = http.Get(link)
+}
+
 func (ac *AppContext) list(chatId int64) {
 	rows, err := ac.db.Query(`SELECT content FROM reminders`)
 	if err, ok := err.(*pq.Error); ok {
@@ -100,12 +136,5 @@ func (ac *AppContext) list(chatId int64) {
 		arr = append(arr, content)
 	}
 	text := s.Join(arr, "\n")
-
-	link := "https://api.telegram.org/{botId}:{apiKey}/sendMessage?chat_id={chatId}&text={text}"
-	link = s.Replace(link, "{botId}", ac.conf.BOT.BotId, -1)
-	link = s.Replace(link, "{apiKey}", ac.conf.BOT.ApiKey, -1)
-	link = s.Replace(link, "{chatId}", strconv.FormatInt(chatId, 10), -1)
-	link = s.Replace(link, "{text}", url.QueryEscape(text), -1)
-
-	_, _ = http.Get(link)
+	ac.sendText(chatId, text)
 }
