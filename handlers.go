@@ -70,6 +70,7 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	case "list":
 		ac.listBuf(chatId)
 	case "clear":
+
 		// id := s.Join(arr[1:len(arr)], " ")
 		ac.buf.Reset()
 	default:
