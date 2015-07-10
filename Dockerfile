@@ -1,9 +1,8 @@
 FROM golang
  
-ADD /var/apps/remindbot /go/src/github.com/aranair/remindbot
+ADD ~/var/apps/remindbot/* /go/src/github.com/aranair/remindbot/
 
-WORKDIR /go/src/github.com/aranair/remindbot
-RUN go install
+RUN go install /go/src/github.com/aranair/remindbot
 
 ADD ~/config.toml /go/bin/
 
