@@ -1,11 +1,13 @@
 FROM golang
- 
-ADD ~/var/apps/remindbot/* /go/src/github.com/aranair/remindbot/
 
-RUN go install /go/src/github.com/aranair/remindbot
+ADD . /go/src/github.com/aranair/remindbot/
 
-ADD ~/config.toml /go/bin/
+WORKDIR /go/src/github.com/aranair/remindbot
+RUN go get ./...
+RUN go install
+
+ADD config.toml /go/bin/
 
 ENTRYPOINT /go/bin/remindbot
- 
+
 EXPOSE 8080
