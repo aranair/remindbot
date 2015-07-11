@@ -1,12 +1,11 @@
-FROM golang
+FROM golang:1.4
 
-ADD . /go/src/github.com/aranair/remindbot/
-
+RUN go get github.com/aranair/remindbot
 WORKDIR /go/src/github.com/aranair/remindbot
 RUN go get ./...
-RUN go install
+RUN go install ./...
 
-ADD config.toml /go/bin/
+ADD configs.toml /go/bin/
 
 ENTRYPOINT /go/bin/remindbot
 
