@@ -9,4 +9,4 @@ ADD configs.toml /go/bin/
 
 ENTRYPOINT /go/bin/remindbot
 
-EXPOSE 8080
+EXPOSE 80

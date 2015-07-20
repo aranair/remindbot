@@ -44,6 +44,6 @@ func main() {
 	r := router.New()
 	r.POST("/reminders", stack.ThenFunc(ac.CommandHandler))
 
-	fmt.Println("Server starting at port 8080.")
-	http.ListenAndServe(":8080", r)
+	fmt.Println("Server starting at port 80.")
+	http.ListenAndServe(":80", r)
 }
