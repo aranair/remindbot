@@ -7,6 +7,7 @@ RUN go install ./...
 
 ADD configs.toml /go/bin/
 
-ENTRYPOINT /go/bin/remindbot
+WORKDIR /go/bin/
+ENTRYPOINT remindbot
 
 EXPOSE 8080
