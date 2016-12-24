@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -34,7 +33,6 @@ type Chat struct {
 type AppContext struct {
 	db   *sql.DB
 	conf config.Config
-	buf  *bytes.Buffer
 }
 
 type Reminder struct {
@@ -43,8 +41,8 @@ type Reminder struct {
 	ChatId  int64  `sql:chat_id`
 }
 
-func NewAppContext(db *sql.DB, conf config.Config, buf *bytes.Buffer) AppContext {
-	return AppContext{db: db, conf: conf, buf: buf}
+func NewAppContext(db *sql.DB, conf config.Config) AppContext {
+	return AppContext{db: db, conf: conf}
 }
 
 func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,17 +88,18 @@ func (ac *AppContext) save(txt string, chatId int64) {
 func (ac *AppContext) clear(id int, chatId int64) {
 	_, err := ac.db.Exec(`DELETE FROM reminders WHERE chat_id=$1 AND id=$2`, chatId, id)
 	checkErr(err)
-	ac.sendText(chatId, "Done!")
+	// "&#127881;"
+	ac.sendText(chatId, "Pew!")
 }
 
 func (ac *AppContext) clearall(chatId int64) {
 	_, err := ac.db.Exec(`DELETE FROM reminders WHERE chat_id=$1`, chatId)
 	checkErr(err)
-	ac.sendText(chatId, "All reminders cleared!")
+	ac.sendText(chatId, "Pew Pew Pew!")
 }
 
 func (ac *AppContext) list(chatId int64) {
-	rows, err := ac.db.Query(`SELECT content, id FROM reminders where chat_id=$1`, chatId)
+	rows, err := ac.db.Query(`SELECT content, id FROM reminders WHERE chat_id=$1`, chatId)
 	checkErr(err)
 	defer rows.Close()
 
@@ -110,7 +109,7 @@ func (ac *AppContext) list(chatId int64) {
 		var c string
 		var i int64
 		_ = rows.Scan(&c, &i)
-		arr = append(arr, "- "+c+"("+strconv.Itoa(int(i))+")")
+		arr = append(arr, "- "+c+" ("+strconv.Itoa(int(i))+")")
 	}
 	text := s.Join(arr, "\n")
 

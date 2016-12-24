@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 
@@ -38,8 +37,7 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
-	buf := bytes.NewBuffer(nil)
-	ac := handlers.NewAppContext(db, conf, buf)
+	ac := handlers.NewAppContext(db, conf)
 	stack := alice.New()
 
 	r := router.New()
