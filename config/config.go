@@ -1,8 +1,7 @@
 package config
 
 type Config struct {
-	DB  database `toml:"database"`
-	BOT bot      `toml:"bot"`
+	BOT bot `toml:"bot"`
 }
 
 type database struct {

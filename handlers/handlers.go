@@ -10,9 +10,9 @@ import (
 	"net/url"
 	"strconv"
 	s "strings"
+	"time"
 
 	"github.com/aranair/remindbot/config"
-	"github.com/lib/pq"
 )
 
 type Update struct {
@@ -44,6 +44,7 @@ func NewAppContext(db *sql.DB, conf config.Config, buf *bytes.Buffer) AppContext
 func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	var update Update
 
+	fmt.Println(r.Body)
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&update); err != nil {
 		log.Println(err)
@@ -60,52 +61,42 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	switch cmd {
 	case "remind":
 		txt := s.Join(arr[1:len(arr)], " ")
-		b := []byte(txt + "\n")
-
-		fmt.Println("Text: ", txt)
-		if _, err := ac.buf.Write(b); err != nil {
-			fmt.Println("Write error.")
-		}
-		// ac.save(txt)
+		ac.save(txt)
 	case "list":
-		ac.listBuf(chatId)
+		ac.list(chatId)
 	case "clear":
-
-		// id := s.Join(arr[1:len(arr)], " ")
-		ac.buf.Reset()
+		id := s.Join(arr[1:len(arr)], " ")
+		i, _ := strconv.Atoi(id)
+		ac.clear(i)
 	default:
-		fmt.Println("Invalid command.")
+		fmt.Println("Ignoring update.")
 	}
 }
 
 func (ac *AppContext) save(txt string) {
-	_, err := ac.db.Exec(`INSERT INTO reminders(content) VALUES ($1)`, txt)
-
-	if err, ok := err.(*pq.Error); ok {
-		fmt.Println("pq error:", err.Code.Name())
-	}
+	_, err := ac.db.Exec(`INSERT INTO reminders(content, created) VALUES ($1, $2)`, txt, time.Now())
+	checkErr(err)
 }
 
 func (ac *AppContext) clear(id int) {
 	_, err := ac.db.Exec(`DELETE FROM reminders WHERE id=$1`, id)
-
-	if err, ok := err.(*pq.Error); ok {
-		fmt.Println("pq error:", err.Code.Name())
-	}
+	checkErr(err)
 }
 
-func (ac *AppContext) listBuf(chatId int64) {
-	buf := ac.buf
-	var data []byte
-	var s []byte
-	for {
-		data, _ = buf.ReadBytes('\n')
-		if len(data) == 0 {
-			break
-		}
-		s = append(s, data...)
+func (ac *AppContext) list(chatId int64) {
+	rows, err := ac.db.Query(`SELECT content FROM reminders`)
+	checkErr(err)
+
+	defer rows.Close()
+	var arr []string
+
+	for rows.Next() {
+		var content string
+		_ = rows.Scan(&content)
+		arr = append(arr, content)
 	}
-	ac.sendText(chatId, string(s))
+	text := s.Join(arr, "\n")
+	ac.sendText(chatId, text)
 }
 
 func (ac *AppContext) sendText(chatId int64, text string) {
@@ -123,19 +114,8 @@ func (ac *AppContext) sendText(chatId int64, text string) {
 	_, _ = http.Get(link)
 }
 
-func (ac *AppContext) list(chatId int64) {
-	rows, err := ac.db.Query(`SELECT content FROM reminders`)
-	if err, ok := err.(*pq.Error); ok {
-		fmt.Println("pq error:", err.Code.Name())
-		return
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
 	}
-	defer rows.Close()
-	var arr []string
-	for rows.Next() {
-		var content string
-		_ = rows.Scan(&content)
-		arr = append(arr, content)
-	}
-	text := s.Join(arr, "\n")
-	ac.sendText(chatId, text)
 }
