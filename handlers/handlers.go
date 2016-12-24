@@ -100,7 +100,7 @@ func (ac *AppContext) list(chatId int64) {
 }
 
 func (ac *AppContext) sendText(chatId int64, text string) {
-	link := "https://api.telegram.org/{botId}:{apiKey}/sendMessage?chat_id={chatId}&text={text}"
+	link := "https://api.telegram.org/bot{botId}:{apiKey}/sendMessage?chat_id={chatId}&text={text}"
 	link = s.Replace(link, "{botId}", ac.conf.BOT.BotId, -1)
 	link = s.Replace(link, "{apiKey}", ac.conf.BOT.ApiKey, -1)
 	link = s.Replace(link, "{chatId}", strconv.FormatInt(chatId, 10), -1)
