@@ -1,10 +1,13 @@
 Endpoint for @hn_remind_bot in telegram
 
-### What?
+### What is this?
 
+- Telegram bot
 - Golang
 - Docker
+- SQLITE3
 
-### How?
+### How to deploy
 
-- Deploy via github hooks that are configured on the server.
+- `git push production master`
+- `docker-compose up`
