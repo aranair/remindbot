@@ -16,11 +16,6 @@ import (
 	"github.com/justinas/alice"
 )
 
-type Reminder struct {
-	Id      int64
-	Content string
-}
-
 func main() {
 	var conf config.Config
 
@@ -28,6 +23,7 @@ func main() {
 	checkErr(err)
 	fmt.Println(conf)
 
+	// db, err := sql.Open("sqlite3", "./reminders.db")
 	db, err := sql.Open("sqlite3", conf.DB.Datapath+"/reminders.db")
 	checkErr(err)
 
@@ -63,10 +59,10 @@ func CreateTable(db *sql.DB) {
 	// create table if not exists
 	sql_table := `
 	CREATE TABLE IF NOT EXISTS reminders(
-		Id INTEGER PRIMARY KEY AUTOINCREMENT,
-		Content TEXT,
-		Chat_id INTEGER,
-		Created DATETIME
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		content TEXT,
+		chat_id INTEGER,
+		created DATETIME
 	);
 	`
 	_, err := db.Exec(sql_table)

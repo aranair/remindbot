@@ -38,9 +38,9 @@ type AppContext struct {
 }
 
 type Reminder struct {
-	Id      int64  `db:id`
-	Content string `db:content`
-	ChatId  int64  `db:chat_id`
+	Id      int64  `sql:id`
+	Content string `sql:content`
+	ChatId  int64  `sql:chat_id`
 }
 
 func NewAppContext(db *sql.DB, conf config.Config, buf *bytes.Buffer) AppContext {
@@ -105,11 +105,12 @@ func (ac *AppContext) list(chatId int64) {
 	defer rows.Close()
 
 	var arr []string
+
 	for rows.Next() {
-		var r Reminder
-		_ = rows.Scan(&r)
-		strId := strconv.Itoa(int(r.Id))
-		arr = append(arr, "- "+r.Content+"("+strId+")")
+		var c string
+		var i int64
+		_ = rows.Scan(&c, &i)
+		arr = append(arr, "- "+c+"("+strconv.Itoa(int(i))+")")
 	}
 	text := s.Join(arr, "\n")
 
