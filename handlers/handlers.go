@@ -57,6 +57,7 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	chatId := update.Msg.Chat.Id
 
 	fmt.Println("Command: ", cmd)
+	fmt.Println("Chat ID: ", chatId)
 
 	switch cmd {
 	case "remind":
@@ -86,10 +87,9 @@ func (ac *AppContext) clear(id int) {
 func (ac *AppContext) list(chatId int64) {
 	rows, err := ac.db.Query(`SELECT content FROM reminders`)
 	checkErr(err)
-
 	defer rows.Close()
-	var arr []string
 
+	var arr []string
 	for rows.Next() {
 		var content string
 		_ = rows.Scan(&content)
@@ -104,6 +104,7 @@ func (ac *AppContext) sendText(chatId int64, text string) {
 	link = s.Replace(link, "{botId}", ac.conf.BOT.BotId, -1)
 	link = s.Replace(link, "{apiKey}", ac.conf.BOT.ApiKey, -1)
 	link = s.Replace(link, "{chatId}", strconv.FormatInt(chatId, 10), -1)
+
 	if len(text) < 5 {
 		link = s.Replace(link, "{text}", url.QueryEscape("No current reminders."), -1)
 	} else {

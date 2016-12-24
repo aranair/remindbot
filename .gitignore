@@ -1,1 +1,3 @@
 *.toml
+docker/*.toml
+reminders.db
