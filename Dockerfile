@@ -2,8 +2,9 @@ FROM golang:1.6
 
 ADD configs.toml /go/bin/
 
-RUN go get github.com/aranair/remindbot
+ADD . /go/src/github.com/aranair/remindbot
 WORKDIR /go/src/github.com/aranair/remindbot
+
 RUN go get ./...
 RUN go install ./...
 

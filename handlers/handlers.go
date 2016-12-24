@@ -44,7 +44,6 @@ func NewAppContext(db *sql.DB, conf config.Config, buf *bytes.Buffer) AppContext
 func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	var update Update
 
-	fmt.Println(r.Body)
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&update); err != nil {
 		log.Println(err)
@@ -57,7 +56,6 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	chatId := update.Msg.Chat.Id
 
 	fmt.Println("Command: ", cmd)
-	fmt.Println("Chat ID: ", chatId)
 
 	switch cmd {
 	case "remind":
