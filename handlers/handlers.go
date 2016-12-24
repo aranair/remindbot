@@ -37,6 +37,12 @@ type AppContext struct {
 	buf  *bytes.Buffer
 }
 
+type Reminder struct {
+	Id      int64  `db:id`
+	Content string `db:content`
+	ChatId  int64  `db:chat_id`
+}
+
 func NewAppContext(db *sql.DB, conf config.Config, buf *bytes.Buffer) AppContext {
 	return AppContext{db: db, conf: conf, buf: buf}
 }
@@ -68,6 +74,8 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 		id := s.Join(arr[1:len(arr)], " ")
 		i, _ := strconv.Atoi(id)
 		ac.clear(i, chatId)
+	case "clearall":
+		ac.clearall(chatId)
 	default:
 		fmt.Println("Ignoring update.")
 	}
@@ -76,30 +84,37 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 func (ac *AppContext) save(txt string, chatId int64) {
 	_, err := ac.db.Exec(`INSERT INTO reminders(content, created, chat_id) VALUES ($1, $2, $3)`, txt, time.Now(), chatId)
 	checkErr(err)
-	ac.sendText(chatId, "Reminder recorded.")
+	ac.sendText(chatId, "I remember liao!")
 }
 
-func (ac *AppContext) clear(_ int, chatId int64) {
+func (ac *AppContext) clear(id int, chatId int64) {
+	_, err := ac.db.Exec(`DELETE FROM reminders WHERE chat_id=$1 AND id=$2`, chatId, id)
+	checkErr(err)
+	ac.sendText(chatId, "Done!")
+}
+
+func (ac *AppContext) clearall(chatId int64) {
 	_, err := ac.db.Exec(`DELETE FROM reminders WHERE chat_id=$1`, chatId)
 	checkErr(err)
-	ac.sendText(chatId, "Reminders cleared.")
+	ac.sendText(chatId, "All reminders cleared!")
 }
 
 func (ac *AppContext) list(chatId int64) {
-	rows, err := ac.db.Query(`SELECT content FROM reminders where chat_id=$1`, chatId)
+	rows, err := ac.db.Query(`SELECT content, id FROM reminders where chat_id=$1`, chatId)
 	checkErr(err)
 	defer rows.Close()
 
 	var arr []string
 	for rows.Next() {
-		var content string
-		_ = rows.Scan(&content)
-		arr = append(arr, "- "+content)
+		var r Reminder
+		_ = rows.Scan(&r)
+		strId := strconv.Itoa(int(r.Id))
+		arr = append(arr, "- "+r.Content+"("+strId+")")
 	}
 	text := s.Join(arr, "\n")
 
 	if len(text) < 5 {
-		text = "No current reminders."
+		text = "No current reminders, hiak~"
 	}
 
 	ac.sendText(chatId, text)

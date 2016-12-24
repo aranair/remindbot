@@ -28,7 +28,7 @@ func main() {
 	checkErr(err)
 	fmt.Println(conf)
 
-	db, err := sql.Open("sqlite3", "./reminders.db")
+	db, err := sql.Open("sqlite3", conf.DB.Datapath+"/reminders.db")
 	checkErr(err)
 
 	defer db.Close()
@@ -65,6 +65,7 @@ func CreateTable(db *sql.DB) {
 	CREATE TABLE IF NOT EXISTS reminders(
 		Id INTEGER PRIMARY KEY AUTOINCREMENT,
 		Content TEXT,
+		Chat_id INTEGER,
 		Created DATETIME
 	);
 	`
