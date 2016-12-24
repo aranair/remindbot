@@ -5,4 +5,4 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - /Users/homan/data:/var/data
+      - /var/data:/var/data
