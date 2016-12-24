@@ -55,35 +55,38 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	cmd := s.Replace(arr[0], "/", "", -1)
 	chatId := update.Msg.Chat.Id
 
-	fmt.Println("Command: ", cmd)
-
 	switch cmd {
+	case "remindme":
+		txt := s.Join(arr[1:len(arr)], " ")
+		ac.save(txt, chatId)
 	case "remind":
 		txt := s.Join(arr[1:len(arr)], " ")
-		ac.save(txt)
+		ac.save(txt, chatId)
 	case "list":
 		ac.list(chatId)
 	case "clear":
 		id := s.Join(arr[1:len(arr)], " ")
 		i, _ := strconv.Atoi(id)
-		ac.clear(i)
+		ac.clear(i, chatId)
 	default:
 		fmt.Println("Ignoring update.")
 	}
 }
 
-func (ac *AppContext) save(txt string) {
-	_, err := ac.db.Exec(`INSERT INTO reminders(content, created) VALUES ($1, $2)`, txt, time.Now())
+func (ac *AppContext) save(txt string, chatId int64) {
+	_, err := ac.db.Exec(`INSERT INTO reminders(content, created, chat_id) VALUES ($1, $2, $3)`, txt, time.Now(), chatId)
 	checkErr(err)
+	ac.sendText(chatId, "Reminder recorded.")
 }
 
-func (ac *AppContext) clear(id int) {
-	_, err := ac.db.Exec(`DELETE FROM reminders WHERE id=$1`, id)
+func (ac *AppContext) clear(_ int, chatId int64) {
+	_, err := ac.db.Exec(`DELETE FROM reminders WHERE chat_id=$1`, chatId)
 	checkErr(err)
+	ac.sendText(chatId, "Reminders cleared.")
 }
 
 func (ac *AppContext) list(chatId int64) {
-	rows, err := ac.db.Query(`SELECT content FROM reminders`)
+	rows, err := ac.db.Query(`SELECT content FROM reminders where chat_id=$1`, chatId)
 	checkErr(err)
 	defer rows.Close()
 
@@ -91,9 +94,14 @@ func (ac *AppContext) list(chatId int64) {
 	for rows.Next() {
 		var content string
 		_ = rows.Scan(&content)
-		arr = append(arr, content)
+		arr = append(arr, "- "+content)
 	}
 	text := s.Join(arr, "\n")
+
+	if len(text) < 5 {
+		text = "No current reminders."
+	}
+
 	ac.sendText(chatId, text)
 }
 
@@ -102,12 +110,8 @@ func (ac *AppContext) sendText(chatId int64, text string) {
 	link = s.Replace(link, "{botId}", ac.conf.BOT.BotId, -1)
 	link = s.Replace(link, "{apiKey}", ac.conf.BOT.ApiKey, -1)
 	link = s.Replace(link, "{chatId}", strconv.FormatInt(chatId, 10), -1)
+	link = s.Replace(link, "{text}", url.QueryEscape(text), -1)
 
-	if len(text) < 5 {
-		link = s.Replace(link, "{text}", url.QueryEscape("No current reminders."), -1)
-	} else {
-		link = s.Replace(link, "{text}", url.QueryEscape(text), -1)
-	}
 	fmt.Println(link)
 
 	_, _ = http.Get(link)
