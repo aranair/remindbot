@@ -1,13 +1,28 @@
-Endpoint for @hn_remind_bot in telegram
+Endpoint for @hn_remind_bot (A Telegram Bot)
 
 ### What is this?
 
 - Telegram bot
 - Golang
 - Docker
-- SQLITE3
+- SQLITE
 
-### How to deploy
+### Commands
 
-- `git push production master`
+- remind __
+- remind me to __
+- clear _ID_
+- clearall
+- list
+
+### How to Run?
+
+- Create a `configs.toml` file
 - `docker-compose up`
+
+### How to Deploy?
+
+- Set up git hooks in production
+- `git push production master`
+- `docker-compose build`
+- `docker-compose up -d`
