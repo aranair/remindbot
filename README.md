@@ -1,17 +1,19 @@
-Endpoint for @hn_remind_bot (A Telegram Bot)
+RemindBot - A Telegram Bot written in Golang
 
 ### What is this?
 
 - Telegram bot
 - Golang
 - Docker
-- SQLITE
+- Sqlite
+- Nginx / Self-Signed SSL Cert
+- Digital Ocean
 
 ### Commands
 
-- remind __
-- remind me to __
-- clear _ID_
+- remind Do this and this
+- remind me to Do this and this
+- clear 2
 - clearall
 - list
 
@@ -23,6 +25,16 @@ Endpoint for @hn_remind_bot (A Telegram Bot)
 ### How to Deploy?
 
 - Set up git hooks in production
+
+```bash
+#!/bin/sh
+
+# /var/repo/site.git/hooks/post-receive
+git --work-tree=/var/app/remindbot --git-dir=/var/repo/site.git checkout -f
+cd /var/app/remindbot
+docker-compose build
+docker-compose down
+docker-compose -d
+```
+
 - `git push production master`
-- `docker-compose build`
-- `docker-compose up -d`
