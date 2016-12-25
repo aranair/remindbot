@@ -11,7 +11,6 @@ Hazel - A Telegram Bot written in Golang
 
 ### See It in Action
 
-<iframe src="//giphy.com/embed/Uct1vWeS03WLe" width="480" height="125" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/Uct1vWeS03WLe">via GIPHY</a></p>
 
 ### Commands
 
