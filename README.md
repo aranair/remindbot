@@ -11,6 +11,7 @@ Hazel - A Telegram Bot written in Golang
 
 ### See It in Action
 
+![Commands!](https://github.com/aranair/remindbot/blob/master/commands.png?raw=true "Commands")
 
 ### Commands
 
@@ -20,8 +21,6 @@ Hazel - A Telegram Bot written in Golang
 - clear 2
 - clearall
 - list
-
-![Commands!](https://github.com/aranair/remindbot/blob/master/commands.png?raw=true "Commands")
 
 ### How to Run?
 
