@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/aranair/remindbot/commands"
 	"github.com/aranair/remindbot/config"
 	"github.com/aranair/remindbot/handlers"
+
 	router "github.com/aranair/remindbot/router"
 
 	"database/sql"
@@ -20,14 +22,9 @@ func main() {
 
 	_, err := toml.DecodeFile("configs.toml", &conf)
 	checkErr(err)
+
 	fmt.Println(conf)
-
-	// db, err := sql.Open("sqlite3", "./reminders.db")
-	db, err := sql.Open("sqlite3", conf.DB.Datapath+"/reminders.db")
-	checkErr(err)
-
-	defer db.Close()
-	CreateTable(db)
+	db := initDB(conf.DB.Datapath)
 
 	// pqStr := "user=" + conf.DB.User + " password='" + conf.DB.Password + "' dbname=remindbot host=localhost sslmode=disable"
 	// fmt.Println(pqStr)
@@ -37,7 +34,7 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
-	ac := handlers.NewAppContext(db, conf)
+	ac := handlers.NewAppContext(db, conf, commands.NewCommandList())
 	stack := alice.New()
 
 	r := router.New()
@@ -47,14 +44,20 @@ func main() {
 	fmt.Println("Server starting at port 8080.")
 }
 
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
+func initDB(datapath string) *sql.DB {
+	db, err := sql.Open("sqlite3", datapath+"/reminders.db")
+	checkErr(err)
+
+	defer db.Close()
+
+	err = createTable(db)
+	checkErr(err)
+
+	return db
 }
 
 // Create table if not exists
-func CreateTable(db *sql.DB) {
+func createTable(db *sql.DB) (err error) {
 	sql_table := `
 	CREATE TABLE IF NOT EXISTS reminders(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,7 +66,11 @@ func CreateTable(db *sql.DB) {
 		created DATETIME
 	);
 	`
-	_, err := db.Exec(sql_table)
+	_, err = db.Exec(sql_table)
+	return
+}
+
+func checkErr(err error) {
 	if err != nil {
 		panic(err)
 	}

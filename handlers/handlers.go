@@ -11,6 +11,7 @@ import (
 	s "strings"
 	"time"
 
+	"github.com/aranair/remindbot/commands"
 	"github.com/aranair/remindbot/config"
 )
 
@@ -33,6 +34,7 @@ type Chat struct {
 type AppContext struct {
 	db   *sql.DB
 	conf config.Config
+	cmds commands.Commands
 }
 
 type Reminder struct {
@@ -41,8 +43,8 @@ type Reminder struct {
 	ChatId  int64  `sql:chat_id`
 }
 
-func NewAppContext(db *sql.DB, conf config.Config) AppContext {
-	return AppContext{db: db, conf: conf}
+func NewAppContext(db *sql.DB, conf config.Config, cmds commands.Commands) AppContext {
+	return AppContext{db: db, conf: conf, cmds: cmds}
 }
 
 func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,27 +57,19 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(update.Msg.Text)
 	}
 
-	arr := s.Split(update.Msg.Text, " ")
-	cmd := s.Replace(arr[0], "/", "", -1)
+	cmd, txt := ac.cmds.Extract(update.Msg.Text)
 	chatId := update.Msg.Chat.Id
 
 	switch cmd {
-	case "remindme":
-		txt := s.Join(arr[1:len(arr)], " ")
-		ac.save(txt, chatId)
 	case "remind":
-		txt := s.Join(arr[1:len(arr)], " ")
 		ac.save(txt, chatId)
 	case "list":
 		ac.list(chatId)
 	case "clear":
-		id := s.Join(arr[1:len(arr)], " ")
-		i, _ := strconv.Atoi(id)
+		i, _ := strconv.Atoi(txt)
 		ac.clear(i, chatId)
 	case "clearall":
 		ac.clearall(chatId)
-	default:
-		fmt.Println("Ignoring update.")
 	}
 }
 
