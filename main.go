@@ -25,6 +25,7 @@ func main() {
 
 	fmt.Println(conf)
 	db := initDB(conf.DB.Datapath)
+	defer db.Close()
 
 	// pqStr := "user=" + conf.DB.User + " password='" + conf.DB.Password + "' dbname=remindbot host=localhost sslmode=disable"
 	// fmt.Println(pqStr)
@@ -47,8 +48,6 @@ func main() {
 func initDB(datapath string) *sql.DB {
 	db, err := sql.Open("sqlite3", datapath+"/reminders.db")
 	checkErr(err)
-
-	defer db.Close()
 
 	err = createTable(db)
 	checkErr(err)
