@@ -20,7 +20,7 @@ func NewCommandList() Commands {
 		l:     compileRegexp(`(?i)^(list)`),
 		c:     compileRegexp(`(?i)^(clear) (\d+)`),
 		cl:    compileRegexp(`(?i)^(clearall)`),
-		hazel: compileRegexp(`(?i)^(hazel)`),
+		hazel: compileRegexp(`(?i)(hazel)`),
 	}
 }
 
