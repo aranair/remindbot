@@ -1,4 +1,4 @@
-RemindBot - A Telegram Bot written in Golang
+Hazel - A Telegram Bot written in Golang
 
 ### What is this?
 
@@ -11,6 +11,7 @@ RemindBot - A Telegram Bot written in Golang
 
 ### Commands
 
+- Hazel, anything: `replies with korean Hello :P`
 - remind Do this and this
 - remind me to Do this and this
 - clear 2
