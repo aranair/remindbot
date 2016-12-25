@@ -1,0 +1,5 @@
+[bot]
+  bot_id = "YOUR_BOT_ID"
+  api_key = "YOUR_API_KEY"
+[database]
+  datapath = "PATH_TO_SQLITEE_FOLDER"

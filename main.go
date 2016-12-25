@@ -53,8 +53,8 @@ func checkErr(err error) {
 	}
 }
 
+// Create table if not exists
 func CreateTable(db *sql.DB) {
-	// create table if not exists
 	sql_table := `
 	CREATE TABLE IF NOT EXISTS reminders(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
