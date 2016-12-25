@@ -17,6 +17,8 @@ RemindBot - A Telegram Bot written in Golang
 - clearall
 - list
 
+![Commands!](https://github.com/aranair/remindbot/blob/master/commands.png?raw=true "Commands")
+
 ### How to Run?
 
 - Create a `configs.toml` file
