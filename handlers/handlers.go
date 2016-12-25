@@ -60,7 +60,7 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	cmd, txt := ac.cmds.Extract(update.Msg.Text)
 	chatId := update.Msg.Chat.Id
 
-	switch cmd {
+	switch s.ToLower(cmd) {
 	case "remind":
 		ac.save(txt, chatId)
 	case "list":
