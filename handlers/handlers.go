@@ -61,6 +61,8 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	chatId := update.Msg.Chat.Id
 
 	switch s.ToLower(cmd) {
+	case "hazel":
+		ac.sendText(chatId, "안녕~")
 	case "remind":
 		ac.save(txt, chatId)
 	case "list":
