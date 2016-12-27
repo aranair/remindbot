@@ -9,6 +9,10 @@ Hazel - A Telegram Bot written in Golang
 - Nginx / Self-Signed SSL Cert
 - Digital Ocean
 
+### Walkthrough of Code
+
+[https://aranair.github.io/posts/2016/12/25/how-to-set-up-golang-telegram-bot-with-webhooks/][https://aranair.github.io/posts/2016/12/25/how-to-set-up-golang-telegram-bot-with-webhooks/]
+
 ### See It in Action
 
 ![Commands!](https://github.com/aranair/remindbot/blob/master/commands.png?raw=true "Commands")
