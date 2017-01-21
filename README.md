@@ -12,6 +12,10 @@ Hazel - A Telegram Bot written in Golang
   - Part 1: [https://aranair.github.io/posts/2016/12/25/how-to-set-up-golang-telegram-bot-with-webhooks/][1]
   - Part 2: [https://aranair.github.io/posts/2017/01/21/how-i-deployed-golang-bot-on-digital-ocean/][2]
 
+### Walkthrough of Code
+
+https://aranair.github.io/posts/2016/12/25/how-to-set-up-golang-telegram-bot-with-webhooks/
+
 ### See It in Action
 
 ![Commands!](https://github.com/aranair/remindbot/blob/master/commands.png?raw=true "Commands")
