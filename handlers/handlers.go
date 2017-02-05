@@ -115,16 +115,20 @@ func (ac *AppContext) list(chatId int64) {
 		var label string
 		if int(duration.Hours()) == 0 {
 			durationNum = int(duration.Minutes())
-			label = "mins"
+			label = "min"
 		} else if duration.Hours() < 24 {
 			durationNum = int(duration.Hours())
-			label = "hours"
+			label = "hour"
 		} else {
 			durationNum = int(duration.Hours()) / 24
-			label = "days"
+			label = "day"
 		}
 
-		arr = append(arr, "- "+c+",  "+strconv.Itoa(int(durationNum))+" "+label+" ago. ("+strconv.Itoa(int(i))+")")
+		if durationNum > 1 {
+			label = label + "s"
+		}
+
+		arr = append(arr, "- "+c+" ("+strconv.Itoa(int(durationNum))+" "+label+") ("+strconv.Itoa(int(i))+")")
 	}
 	text := s.Join(arr, "\n")
 
