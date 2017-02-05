@@ -8,6 +8,7 @@ type Commands struct {
 	rmt   *regexp.Regexp
 	r     *regexp.Regexp
 	l     *regexp.Regexp
+	rn    *regexp.Regexp
 	c     *regexp.Regexp
 	cl    *regexp.Regexp
 	hazel *regexp.Regexp
@@ -19,6 +20,7 @@ func NewCommandList() Commands {
 		r:     compileRegexp(`(?i)^(remind) (.+)`),
 		l:     compileRegexp(`(?i)^(list)`),
 		c:     compileRegexp(`(?i)^(clear) (\d+)`),
+		rn:    compileRegexp(`(?i)^(renum)`),
 		cl:    compileRegexp(`(?i)^(clearall)`),
 		hazel: compileRegexp(`(?i)(hazel)`),
 	}
@@ -50,6 +52,11 @@ func (c *Commands) Extract(t string) (string, string) {
 	a = c.c.FindStringSubmatch(t)
 	if len(a) == 3 {
 		return a[1], a[2]
+	}
+
+	a = c.rn.FindStringSubmatch(t)
+	if len(a) == 2 {
+		return a[0], a[1]
 	}
 
 	a = c.cl.FindStringSubmatch(t)

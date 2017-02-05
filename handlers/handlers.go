@@ -38,9 +38,10 @@ type AppContext struct {
 }
 
 type Reminder struct {
-	Id      int64  `sql:id`
-	Content string `sql:content`
-	ChatId  int64  `sql:chat_id`
+	Id      int64     `sql:id`
+	Content string    `sql:content`
+	Created time.Time `sql:created`
+	ChatId  int64     `sql:chat_id`
 }
 
 func NewAppContext(db *sql.DB, conf config.Config, cmds commands.Commands) AppContext {
@@ -67,6 +68,8 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 		ac.save(txt, chatId)
 	case "list":
 		ac.list(chatId)
+	case "renum":
+		ac.renum(chatId)
 	case "clear":
 		i, _ := strconv.Atoi(txt)
 		ac.clear(i, chatId)
@@ -95,7 +98,7 @@ func (ac *AppContext) clearall(chatId int64) {
 }
 
 func (ac *AppContext) list(chatId int64) {
-	rows, err := ac.db.Query(`SELECT content, id FROM reminders WHERE chat_id=$1`, chatId)
+	rows, err := ac.db.Query(`SELECT id, content, created FROM reminders WHERE chat_id=$1`, chatId)
 	checkErr(err)
 	defer rows.Close()
 
@@ -104,8 +107,24 @@ func (ac *AppContext) list(chatId int64) {
 	for rows.Next() {
 		var c string
 		var i int64
-		_ = rows.Scan(&c, &i)
-		arr = append(arr, "- "+c+" ("+strconv.Itoa(int(i))+")")
+		var d time.Time
+		_ = rows.Scan(&i, &c, &d)
+		var duration = time.Since(d)
+
+		var durationNum int
+		var label string
+		if int(duration.Hours()) == 0 {
+			durationNum = int(duration.Minutes())
+			label = "mins"
+		} else if duration.Hours() < 24 {
+			durationNum = int(duration.Hours())
+			label = "hours"
+		} else {
+			durationNum = int(duration.Hours()) / 24
+			label = "days"
+		}
+
+		arr = append(arr, strconv.Itoa(int(i))+") "+c+" - "+strconv.Itoa(int(durationNum))+" "+label+" ago")
 	}
 	text := s.Join(arr, "\n")
 
@@ -114,6 +133,36 @@ func (ac *AppContext) list(chatId int64) {
 	}
 
 	ac.sendText(chatId, text)
+}
+
+// This resets numbers for everyone!
+func (ac *AppContext) renum(chatId int64) {
+	rows, err := ac.db.Query(`SELECT content, created, chat_id FROM reminders`)
+	checkErr(err)
+	defer rows.Close()
+
+	var arr []Reminder
+	var c string
+	var d time.Time
+	var cid int64
+
+	for rows.Next() {
+		_ = rows.Scan(&c, &d, &cid)
+		arr = append(arr, Reminder{Content: c, Created: d, ChatId: cid})
+	}
+
+	_, err = ac.db.Exec(`DELETE FROM reminders`)
+	checkErr(err)
+
+	_, err = ac.db.Exec(`DELETE FROM sqlite_sequence WHERE name='reminders';`)
+	checkErr(err)
+
+	for _, r := range arr {
+		_, err := ac.db.Exec(`INSERT INTO reminders(content, created, chat_id) VALUES ($1, $2, $3)`, r.Content, r.Created, r.ChatId)
+		checkErr(err)
+	}
+
+	ac.list(chatId)
 }
 
 func (ac *AppContext) sendText(chatId int64, text string) {
