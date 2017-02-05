@@ -8,6 +8,7 @@ Hazel - A Telegram Bot written in Golang
 - Sqlite
 - Nginx / Self-Signed SSL Cert
 - Digital Ocean
+-
 
 ### Walkthrough of Code
 
