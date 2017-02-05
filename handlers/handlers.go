@@ -124,7 +124,7 @@ func (ac *AppContext) list(chatId int64) {
 			label = "days"
 		}
 
-		arr = append(arr, strconv.Itoa(int(i))+") "+c+" - "+strconv.Itoa(int(durationNum))+" "+label+" ago")
+		arr = append(arr, "- "+c+",  "+strconv.Itoa(int(durationNum))+" "+label+" ago. ("+strconv.Itoa(int(i))+")")
 	}
 	text := s.Join(arr, "\n")
 
