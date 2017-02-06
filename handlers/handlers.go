@@ -109,26 +109,10 @@ func (ac *AppContext) list(chatId int64) {
 		var i int64
 		var d time.Time
 		_ = rows.Scan(&i, &c, &d)
-		var duration = time.Since(d)
 
-		var durationNum int
-		var label string
-		if int(duration.Hours()) == 0 {
-			durationNum = int(duration.Minutes())
-			label = "min"
-		} else if duration.Hours() < 24 {
-			durationNum = int(duration.Hours())
-			label = "hour"
-		} else {
-			durationNum = int(duration.Hours()) / 24
-			label = "day"
-		}
-
-		if durationNum > 1 {
-			label = label + "s"
-		}
-
-		arr = append(arr, "- "+c+" ("+strconv.Itoa(int(durationNum))+" "+label+") ("+strconv.Itoa(int(i))+")")
+		label = timeSinceLabel(d)
+		line := "- " + c + label + "`" + strconv.Itoa(int(i)) + "`"
+		arr = append(arr, line)
 	}
 	text := s.Join(arr, "\n")
 
@@ -137,6 +121,29 @@ func (ac *AppContext) list(chatId int64) {
 	}
 
 	ac.sendText(chatId, text)
+}
+
+func timeSinceLabel(d time.Time) string {
+	var duration = time.Since(d)
+	var durationNum int
+	var unit string
+
+	if int(duration.Hours()) == 0 {
+		durationNum = int(duration.Minutes())
+		unit = "min"
+	} else if duration.Hours() < 24 {
+		durationNum = int(duration.Hours())
+		unit = "hour"
+	} else {
+		durationNum = int(duration.Hours()) / 24
+		unit = "day"
+	}
+
+	if durationNum > 1 {
+		unit = unit + "s"
+	}
+
+	return " `" + strconv.Itoa(int(durationNum)) + " " + unit + "`"
 }
 
 // This resets numbers for everyone!
@@ -170,7 +177,7 @@ func (ac *AppContext) renum(chatId int64) {
 }
 
 func (ac *AppContext) sendText(chatId int64, text string) {
-	link := "https://api.telegram.org/bot{botId}:{apiKey}/sendMessage?chat_id={chatId}&text={text}"
+	link := "https://api.telegram.org/bot{botId}:{apiKey}/sendMessage?chat_id={chatId}&text={text}&parse_mode=Markdown"
 	link = s.Replace(link, "{botId}", ac.conf.BOT.BotId, -1)
 	link = s.Replace(link, "{apiKey}", ac.conf.BOT.ApiKey, -1)
 	link = s.Replace(link, "{chatId}", strconv.FormatInt(chatId, 10), -1)
