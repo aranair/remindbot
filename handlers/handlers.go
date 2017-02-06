@@ -110,7 +110,7 @@ func (ac *AppContext) list(chatId int64) {
 		var d time.Time
 		_ = rows.Scan(&i, &c, &d)
 
-		label = timeSinceLabel(d)
+		label := timeSinceLabel(d)
 		line := "- " + c + label + "`" + strconv.Itoa(int(i)) + "`"
 		arr = append(arr, line)
 	}
