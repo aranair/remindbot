@@ -28,6 +28,10 @@ Hazel - A Telegram Bot written in Golang
 - clearall
 - list
 
+### Resetting Item Number for Resetting
+
+- Unfortunately will deprecate support for multi-tenant bots but I've enabled this for personal use.
+
 ### How to Run?
 
 - Create a `configs.toml` file
