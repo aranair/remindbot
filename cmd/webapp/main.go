@@ -27,14 +27,6 @@ func main() {
 	db := initDB(conf.DB.Datapath)
 	defer db.Close()
 
-	// pqStr := "user=" + conf.DB.User + " password='" + conf.DB.Password + "' dbname=remindbot host=localhost sslmode=disable"
-	// fmt.Println(pqStr)
-
-	// db, err := sql.Open("postgres", pqStr)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	ac := handlers.NewAppContext(db, conf, commands.NewCommandList())
 	stack := alice.New()
 
