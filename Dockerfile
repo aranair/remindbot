@@ -9,6 +9,6 @@ RUN go get ./...
 RUN go install ./...
 
 WORKDIR /go/bin/
-ENTRYPOINT remindbot
+ENTRYPOINT webapp
 
 EXPOSE 8080

@@ -63,7 +63,7 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch s.ToLower(cmd) {
 	case "hazel":
-		ac.sendText(chatId, "안녕~")
+		ac.SendText(chatId, "안녕~")
 	case "remind":
 		ac.save(txt, chatId)
 	case "list":
@@ -81,20 +81,20 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 func (ac *AppContext) save(txt string, chatId int64) {
 	_, err := ac.db.Exec(`INSERT INTO reminders(content, created, chat_id) VALUES ($1, $2, $3)`, txt, time.Now(), chatId)
 	checkErr(err)
-	ac.sendText(chatId, "I remember liao!")
+	ac.SendText(chatId, "I remember liao!")
 }
 
 func (ac *AppContext) clear(id int, chatId int64) {
 	_, err := ac.db.Exec(`DELETE FROM reminders WHERE chat_id=$1 AND id=$2`, chatId, id)
 	checkErr(err)
 	// "&#127881;"
-	ac.sendText(chatId, "Pew!")
+	ac.SendText(chatId, "Pew!")
 }
 
 func (ac *AppContext) clearall(chatId int64) {
 	_, err := ac.db.Exec(`DELETE FROM reminders WHERE chat_id=$1`, chatId)
 	checkErr(err)
-	ac.sendText(chatId, "Pew Pew Pew!")
+	ac.SendText(chatId, "Pew Pew Pew!")
 }
 
 func (ac *AppContext) list(chatId int64) {
@@ -118,7 +118,7 @@ func (ac *AppContext) list(chatId int64) {
 		text = "No current reminders, hiak~"
 	}
 
-	ac.sendText(chatId, text)
+	ac.SendText(chatId, text)
 }
 
 func timeSinceLabel(d time.Time) string {
@@ -174,7 +174,7 @@ func (ac *AppContext) renum(chatId int64) {
 	ac.list(chatId)
 }
 
-func (ac *AppContext) sendText(chatId int64, text string) {
+func (ac *AppContext) SendText(chatId int64, text string) {
 	link := "https://api.telegram.org/bot{botId}:{apiKey}/sendMessage?chat_id={chatId}&text={text}&parse_mode=Markdown"
 	link = s.Replace(link, "{botId}", ac.conf.BOT.BotId, -1)
 	link = s.Replace(link, "{apiKey}", ac.conf.BOT.ApiKey, -1)

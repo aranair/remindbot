@@ -2,19 +2,16 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/aranair/remindbot/commands"
 	"github.com/aranair/remindbot/config"
 	"github.com/aranair/remindbot/handlers"
 
-	router "github.com/aranair/remindbot/router"
-
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/BurntSushi/toml"
-	"github.com/justinas/alice"
+	"github.com/jasonlvhit/gocron"
 )
 
 func task(ac handlers.AppContext, chatId int64, text string) {
@@ -32,15 +29,9 @@ func main() {
 	defer db.Close()
 
 	ac := handlers.NewAppContext(db, conf, commands.NewCommandList())
-
-	stack := alice.New()
-
-	fmt.Println("test")
-	r := router.New()
-	r.POST("/reminders", stack.ThenFunc(ac.CommandHandler))
-
-	http.ListenAndServe(":8080", r)
-	fmt.Println("Server starting at port 8080.")
+	chatId := -6894201
+	gocron.Every(10).Seconds().Do(task, ac, int64(chatId), "Timer test")
+	<-gocron.Start()
 }
 
 func initDB(datapath string) *sql.DB {
