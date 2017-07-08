@@ -1,3 +1,4 @@
 *.toml
 docker/*.toml
 reminders.db
+dbconfig.yml

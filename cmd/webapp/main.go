@@ -46,25 +46,7 @@ func main() {
 func initDB(datapath string) *sql.DB {
 	db, err := sql.Open("sqlite3", datapath+"/reminders.db")
 	checkErr(err)
-
-	err = createTable(db)
-	checkErr(err)
-
 	return db
-}
-
-// Create table if not exists
-func createTable(db *sql.DB) (err error) {
-	sql_table := `
-	CREATE TABLE IF NOT EXISTS reminders(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		content TEXT,
-		chat_id INTEGER,
-		created DATETIME
-	);
-	`
-	_, err = db.Exec(sql_table)
-	return
 }
 
 func checkErr(err error) {
