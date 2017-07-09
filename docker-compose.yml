@@ -1,8 +1,18 @@
 version: '2'
 services:
-  gobot:
+  base:
     build: .
+  hazel:
+    extends: base
     ports:
       - "8080:8080"
+    expose: 
+      - "8080"
     volumes:
-      - /var/data:/var/data
+      - .:/var/data
+    entrypoint: 
+      - webapp
+  timer:
+    extends: base
+    entrypoint: 
+      - timer

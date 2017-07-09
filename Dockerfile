@@ -15,6 +15,3 @@ WORKDIR /go/src/github.com/aranair/remindbot
 RUN sql-migrate up
 
 WORKDIR /go/bin/
-ENTRYPOINT webapp
-
-EXPOSE 8080
