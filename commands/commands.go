@@ -16,7 +16,7 @@ type Commands struct {
 
 func NewCommandList() Commands {
 	return Commands{
-		rmt:	 compileRegexp(`(?im)^(remind){1}(?: me to)? ([^:\r\n]*)(?::?)(.*)$`)
+		rmt:   compileRegexp(`(?im)^(remind){1}(?: me to)? ([^:\r\n]*)(?::?)(.*)$`),
 		l:     compileRegexp(`(?im)^(list)$`),
 		c:     compileRegexp(`(?im)^(clear) (\d+)$`),
 		rn:    compileRegexp(`(?im)^(renum)$`),
