@@ -13,6 +13,8 @@ import (
 
 	"github.com/aranair/remindbot/commands"
 	"github.com/aranair/remindbot/config"
+
+	"github.com/jinzhu/now"
 )
 
 type Update struct {
@@ -41,6 +43,7 @@ type Reminder struct {
 	Id      int64     `sql:id`
 	Content string    `sql:content`
 	Created time.Time `sql:created`
+	DueDt   time.Time `sql:due_dt`
 	ChatId  int64     `sql:chat_id`
 }
 
@@ -58,14 +61,19 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(update.Msg.Text)
 	}
 
-	cmd, txt := ac.cmds.Extract(update.Msg.Text)
+	cmd, txt, ddt := ac.cmds.Extract(update.Msg.Text)
+
+	cmd = strings.TrimSpace(cmd)
+	txt = strings.TrimSpace(txt)
+	dds = strings.TrimSpace(ddt) + " " + strconv.Itoa(time.Now().Year())
+
 	chatId := update.Msg.Chat.Id
 
 	switch s.ToLower(cmd) {
 	case "hazel":
-		ac.SendText(chatId, "안녕~")
+		ac.SendText(chatId, "안녕~~~")
 	case "remind":
-		ac.save(txt, chatId)
+		ac.save(txt, dds, chatId)
 	case "list":
 		ac.list(chatId)
 	case "renum":
@@ -78,10 +86,23 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (ac *AppContext) save(txt string, chatId int64) {
-	_, err := ac.db.Exec(`INSERT INTO reminders(content, created, chat_id) VALUES ($1, $2, $3)`, txt, time.Now(), chatId)
+func (ac *AppContext) save(txt string, dds string, chatId int64) {
+	now.TimeFormats = append(now.TimeFormats, "2Jan 2006 15:04")
+	now.TimeFormats = append(now.TimeFormats, "2Jan 2006 3:04pm")
+	now.TimeFormats = append(now.TimeFormats, "2Jan 2006 3pm")
+
+	now.TimeFormats = append(now.TimeFormats, "2Jan 15:04")
+	now.TimeFormats = append(now.TimeFormats, "2Jan 3:04pm")
+	now.TimeFormats = append(now.TimeFormats, "2Jan 3pm")
+
+	ddt, _ := now.Parse(dds).Format(time.RFC3339)
+	now := time.Now().Format(time.RFC3339)
+
+	_, err := ac.db.Exec(
+		`INSERT INTO reminders(content, created, chat_id, due_dt) VALUES ($1, $2, $3, $4)`, txt, now, chatId, ddt)
+
 	checkErr(err)
-	ac.SendText(chatId, "I remember liao!")
+	ac.SendText(chatId, "Araseo~ remember liao!")
 }
 
 func (ac *AppContext) clear(id int, chatId int64) {
