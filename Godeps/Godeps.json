@@ -8,8 +8,8 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
-			"Comment": "v0.3.0-7-ga368813",
-			"Rev": "a368813c5e648fee92e5f6c30e3944ff9d5e8895"
+			"Comment": "v0.2.0-21-g9906417",
+			"Rev": "99064174e013895bbd9b025c31100bd1d9b590ca"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
@@ -21,9 +21,13 @@
 			"Rev": "42a5804d37aa0b9239b265e894a16b8edbf52d54"
 		},
 		{
+			"ImportPath": "github.com/jinzhu/now",
+			"Rev": "d939ba741945c047cac69c329c5fb0d6b4a06520"
+		},
+		{
 			"ImportPath": "github.com/julienschmidt/httprouter",
-			"Comment": "v1.1-51-g975b5c4",
-			"Rev": "975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e"
+			"Comment": "v1.1-40-g5dd70ee",
+			"Rev": "5dd70ee059943e81987a817fa1a755b11dd119c1"
 		},
 		{
 			"ImportPath": "github.com/justinas/alice",
@@ -32,12 +36,12 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-sqlite3",
-			"Comment": "v1.2.0-98-g9cbb097",
-			"Rev": "9cbb0970444f7ee9ccc65376394a504150b25de1"
+			"Comment": "v1.2.0-10-g2d44dec",
+			"Rev": "2d44decb4941c9cdf72c22297b7890faf7da9bcb"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "054b33e6527139ad5b1ec2f6232c3b175bd9a30c"
+			"Rev": "45e771701b814666a7eb299e6c7a57d0b1799e91"
 		}
 	]
 }
