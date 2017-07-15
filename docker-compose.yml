@@ -9,7 +9,7 @@ services:
     expose: 
       - "8080"
     volumes:
-      - .:/var/data
+      - /var/data:/var/data
     entrypoint: 
       - webapp
   timer:

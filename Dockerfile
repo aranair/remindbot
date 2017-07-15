@@ -9,9 +9,6 @@ WORKDIR /go/src/github.com/aranair/remindbot
 RUN go get github.com/tools/godep
 RUN godep restore
 RUN go install ./...
-RUN go get github.com/rubenv/sql-migrate/...
 
 WORKDIR /go/src/github.com/aranair/remindbot
-RUN sql-migrate up
-
 WORKDIR /go/bin/
