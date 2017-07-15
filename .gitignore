@@ -2,3 +2,4 @@
 docker/*.toml
 reminders.db
 dbconfig.yml
+test.go

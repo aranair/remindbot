@@ -13,8 +13,6 @@ import (
 
 	"github.com/aranair/remindbot/commands"
 	"github.com/aranair/remindbot/config"
-
-	"github.com/jinzhu/now"
 )
 
 type Update struct {
@@ -62,18 +60,11 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cmd, txt, ddt := ac.cmds.Extract(update.Msg.Text)
-
-	cmd = strings.TrimSpace(cmd)
-	txt = strings.TrimSpace(txt)
-	dds = strings.TrimSpace(ddt) + " " + strconv.Itoa(time.Now().Year())
-
 	chatId := update.Msg.Chat.Id
 
 	switch s.ToLower(cmd) {
-	case "hazel":
-		ac.SendText(chatId, "안녕~~~")
 	case "remind":
-		ac.save(txt, dds, chatId)
+		ac.save(txt, ddt, chatId)
 	case "list":
 		ac.list(chatId)
 	case "renum":
@@ -83,23 +74,21 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 		ac.clear(i, chatId)
 	case "clearall":
 		ac.clearall(chatId)
+	case "hazel":
+		ac.SendText(chatId, "안녕~~~")
 	}
 }
 
-func (ac *AppContext) save(txt string, dds string, chatId int64) {
-	now.TimeFormats = append(now.TimeFormats, "2Jan 2006 15:04")
-	now.TimeFormats = append(now.TimeFormats, "2Jan 2006 3:04pm")
-	now.TimeFormats = append(now.TimeFormats, "2Jan 2006 3pm")
-
-	now.TimeFormats = append(now.TimeFormats, "2Jan 15:04")
-	now.TimeFormats = append(now.TimeFormats, "2Jan 3:04pm")
-	now.TimeFormats = append(now.TimeFormats, "2Jan 3pm")
-
-	ddt, _ := now.Parse(dds).Format(time.RFC3339)
+func (ac *AppContext) save(txt string, ddt time.Time, chatId int64) {
 	now := time.Now().Format(time.RFC3339)
 
+	fmt.Println(ddt)
 	_, err := ac.db.Exec(
-		`INSERT INTO reminders(content, created, chat_id, due_dt) VALUES ($1, $2, $3, $4)`, txt, now, chatId, ddt)
+		`INSERT INTO reminders(content, created, chat_id, due_dt) VALUES ($1, $2, $3, $4)`,
+		txt,
+		now,
+		chatId,
+		ddt.Format(time.RFC3339))
 
 	checkErr(err)
 	ac.SendText(chatId, "Araseo~ remember liao!")
@@ -119,18 +108,21 @@ func (ac *AppContext) clearall(chatId int64) {
 }
 
 func (ac *AppContext) list(chatId int64) {
-	rows, err := ac.db.Query(`SELECT id, content, created FROM reminders WHERE chat_id=$1`, chatId)
+	rows, err := ac.db.Query(`SELECT id, content, due_dt FROM reminders WHERE chat_id=$1`, chatId)
 	checkErr(err)
 	defer rows.Close()
 
 	var arr []string
+	var i int64
+	var c string
+	var dt time.Time
 
 	for rows.Next() {
-		var c string
-		var i int64
-		var d time.Time
-		_ = rows.Scan(&i, &c, &d)
+		_ = rows.Scan(&i, &c, &dt)
 		line := "• " + c + " (`" + strconv.Itoa(int(i)) + "`)"
+		if !dt.IsZero() {
+			line = line + " - due " + dt.Format("2 Jan 3PM")
+		}
 		arr = append(arr, line)
 	}
 	text := s.Join(arr, "\n")

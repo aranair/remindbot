@@ -35,7 +35,6 @@ func main() {
 
 	stack := alice.New()
 
-	fmt.Println("test")
 	r := router.New()
 	r.POST("/reminders", stack.ThenFunc(ac.CommandHandler))
 
