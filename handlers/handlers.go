@@ -220,8 +220,7 @@ func (ac *AppContext) CheckDue(chatId int64) {
 		text = "No overdues, keke~"
 	}
 
-	fmt.Println(text)
-	// ac.SendText(chatId, text)
+	ac.SendText(chatId, text)
 }
 
 func (ac *AppContext) SendText(chatId int64, text string) {
