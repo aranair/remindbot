@@ -65,6 +65,8 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	switch s.ToLower(cmd) {
 	case "remind":
 		ac.save(txt, ddt, chatId)
+	case "check due":
+		ac.CheckDue(chatId)
 	case "list":
 		ac.list(chatId)
 	case "renum":
@@ -185,6 +187,41 @@ func (ac *AppContext) renum(chatId int64) {
 	}
 
 	ac.list(chatId)
+}
+
+func (ac *AppContext) CheckDue(chatId int64) {
+	rows, err := ac.db.Query(
+		`SELECT id, content, due_dt FROM reminders WHERE chat_id=$1 and due_dt<=$2 and due_dt!=$3`,
+		chatId,
+		time.Now().Format(time.RFC3339),
+		"0001-01-01T00:00:00Z",
+	)
+
+	checkErr(err)
+	defer rows.Close()
+
+	var arr []string
+	var i int64
+	var c string
+	var dt time.Time
+
+	arr = append(arr, "Overdue:")
+	for rows.Next() {
+		_ = rows.Scan(&i, &c, &dt)
+		line := "• " + c + " (`" + strconv.Itoa(int(i)) + "`)"
+		if !dt.IsZero() {
+			line = line + " - due " + dt.Format("2 Jan 3PM")
+		}
+		arr = append(arr, line)
+	}
+	text := s.Join(arr, "\n")
+
+	if len(text) < 5 {
+		text = "No overdues, keke~"
+	}
+
+	fmt.Println(text)
+	// ac.SendText(chatId, text)
 }
 
 func (ac *AppContext) SendText(chatId int64, text string) {

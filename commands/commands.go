@@ -10,6 +10,7 @@ import (
 
 type Commands struct {
 	rmt   *regexp.Regexp
+	cd    *regexp.Regexp
 	r     *regexp.Regexp
 	l     *regexp.Regexp
 	rn    *regexp.Regexp
@@ -35,6 +36,7 @@ func NewCommandList() Commands {
 
 	return Commands{
 		rmt:   compileRegexp(`(?im)^(remind){1}(?: me to)? ([^:\r\n]*)(?::?)(.*)$`),
+		cd:    compileRegexp(`(?im)^(check due)$`),
 		l:     compileRegexp(`(?im)^(list)$`),
 		c:     compileRegexp(`(?im)^(clear) (\d+)$`),
 		rn:    compileRegexp(`(?im)^(renum)$`),
@@ -55,6 +57,11 @@ func (c *Commands) Extract(t string) (string, string, time.Time) {
 	a = c.rmt.FindStringSubmatch(t)
 	if len(a) == 4 {
 		r1, r2, r3 = a[1], a[2], a[3]
+	}
+
+	a = c.cd.FindStringSubmatch(t)
+	if len(a) == 2 {
+		r1 = a[1]
 	}
 
 	a = c.l.FindStringSubmatch(t)
