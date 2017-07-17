@@ -14,10 +14,6 @@ import (
 	"github.com/jasonlvhit/gocron"
 )
 
-func checkDues(ac handlers.AppContext) {
-	// ac.SendText(chatId, text)
-}
-
 func main() {
 	var conf config.Config
 
@@ -30,7 +26,7 @@ func main() {
 
 	ac := handlers.NewAppContext(db, conf, commands.NewCommandList())
 	// chatId := -6894201
-	gocron.Every(5).Minutes().Do(checkDues, ac)
+	gocron.Every(5).Minutes().Do(ac.CheckDue, -6894201, text)
 	fmt.Println("Starting timer")
 	<-gocron.Start()
 }

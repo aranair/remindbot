@@ -66,7 +66,7 @@ func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
 	case "remind":
 		ac.save(txt, ddt, chatId)
 	case "check due":
-		ac.CheckDue(chatId)
+		ac.CheckDue(chatId, false)
 	case "list":
 		ac.list(chatId)
 	case "renum":
@@ -189,7 +189,7 @@ func (ac *AppContext) renum(chatId int64) {
 	ac.list(chatId)
 }
 
-func (ac *AppContext) CheckDue(chatId int64) {
+func (ac *AppContext) CheckDue(chatId int64, timedCheck bool) {
 	rows, err := ac.db.Query(
 		`SELECT id, content, due_dt FROM reminders WHERE chat_id=$1 and due_dt<=$2 and due_dt!=$3`,
 		chatId,
@@ -216,11 +216,15 @@ func (ac *AppContext) CheckDue(chatId int64) {
 	}
 	text := s.Join(arr, "\n")
 
-	if len(text) < 5 {
+	if len(text) < 10 {
 		text = "No overdues, keke~"
+		if !timedCheck {
+			ac.SendText(chatId, text)
+		}
+	} else {
+		ac.SendText(chatId, text)
 	}
 
-	ac.SendText(chatId, text)
 }
 
 func (ac *AppContext) SendText(chatId int64, text string) {
