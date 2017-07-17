@@ -26,7 +26,7 @@ func main() {
 
 	ac := handlers.NewAppContext(db, conf, commands.NewCommandList())
 	// chatId := -6894201
-	gocron.Every(5).Minutes().Do(ac.CheckDue, -6894201, text)
+	gocron.Every(5).Minutes().Do(ac.CheckDue, -6894201, true)
 	fmt.Println("Starting timer")
 	<-gocron.Start()
 }
