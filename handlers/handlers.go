@@ -35,6 +35,7 @@ type AppContext struct {
 	db   *sql.DB
 	conf config.Config
 	cmds commands.Commands
+	loc  *time.Location
 }
 
 type Reminder struct {
@@ -46,7 +47,8 @@ type Reminder struct {
 }
 
 func NewAppContext(db *sql.DB, conf config.Config, cmds commands.Commands) AppContext {
-	return AppContext{db: db, conf: conf, cmds: cmds}
+	sg, _ := time.LoadLocation("Asia/Singapore")
+	return AppContext{db: db, conf: conf, cmds: cmds, loc: sg}
 }
 
 func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +125,7 @@ func (ac *AppContext) list(chatId int64) {
 		_ = rows.Scan(&i, &c, &dt)
 		line := "• " + c + " (`" + strconv.Itoa(int(i)) + "`)"
 		if !dt.IsZero() {
-			line = line + " - due " + dt.Format("2 Jan 3PM")
+			line = line + " - due " + dt.In(ac.loc).Format("2 Jan 3PM")
 		}
 		arr = append(arr, line)
 	}
@@ -210,7 +212,7 @@ func (ac *AppContext) CheckDue(chatId int64, timedCheck bool) {
 		_ = rows.Scan(&i, &c, &dt)
 		line := "• " + c + " (`" + strconv.Itoa(int(i)) + "`)"
 		if !dt.IsZero() {
-			line = line + " - due " + dt.Format("2 Jan 3PM")
+			line = line + " - due " + dt.In(ac.loc).Format("2 Jan 3PM")
 		}
 		arr = append(arr, line)
 	}
@@ -224,7 +226,6 @@ func (ac *AppContext) CheckDue(chatId int64, timedCheck bool) {
 	} else {
 		ac.SendText(chatId, text)
 	}
-
 }
 
 func (ac *AppContext) SendText(chatId int64, text string) {
