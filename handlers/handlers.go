@@ -216,6 +216,7 @@ func (ac *AppContext) CheckDue(chatId int64, timedCheck bool) {
 	}
 	text := s.Join(arr, "\n")
 
+	fmt.Println(text)
 	if len(text) < 10 {
 		text = "No overdues, keke~"
 		if !timedCheck {
