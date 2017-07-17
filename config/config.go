@@ -14,5 +14,5 @@ type database struct {
 type bot struct {
 	BotId      string `toml:"bot_id"`
 	ApiKey     string `toml:"api_key"`
-	MainChatId int    `toml:"main_chat_id"`
+	MainChatId int64  `toml:"main_chat_id"`
 }
