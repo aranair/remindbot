@@ -94,12 +94,13 @@ func (c *Commands) Extract(t string) (string, string, time.Time) {
 	r3 = s.ToLower(s.TrimSpace(r3))
 
 	// ddt = now.Parse(r3 + " " + strconv.Itoa(time.now().Year()))
-	ddt, err := now.Parse(r3)
-	loc, _ := time.LoadLocation("Asia/Singapore")
+	t, err := now.Parse(r3)
 
 	var r3t time.Time
 	if err == nil {
-		r3t = ddt.In(loc)
+		loc, _ := time.LoadLocation("Asia/Singapore")
+		ddt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, loc)
+		r3t = ddt
 	} else {
 		r3t = time.Time{}
 	}
