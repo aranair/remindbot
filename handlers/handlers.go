@@ -192,6 +192,7 @@ func (ac *AppContext) renum(chatId int64) {
 }
 
 func (ac *AppContext) CheckDue(chatId int64, timedCheck bool) {
+	fmt.Println(time.Now().Format(time.RFC3339))
 	rows, err := ac.db.Query(
 		`SELECT id, content, due_dt FROM reminders WHERE chat_id=$1 and due_dt<=$2 and due_dt!=$3`,
 		chatId,
@@ -217,6 +218,7 @@ func (ac *AppContext) CheckDue(chatId int64, timedCheck bool) {
 		arr = append(arr, line)
 	}
 	text := s.Join(arr, "\n")
+	fmt.Println(text)
 
 	if len(text) < 10 {
 		text = "No overdues, keke~"
