@@ -99,7 +99,7 @@ func (c *Commands) Extract(t string) (string, string, time.Time) {
 	var r3t time.Time
 	if err == nil {
 		loc, _ := time.LoadLocation("Asia/Singapore")
-		ddt = time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, loc)
+		ddt = time.Date(ddt.Year(), ddt.Month(), ddt.Day(), ddt.Hour(), ddt.Minute(), 0, 0, loc)
 		r3t = ddt
 	} else {
 		r3t = time.Time{}
