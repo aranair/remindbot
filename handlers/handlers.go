@@ -199,6 +199,8 @@ func (ac *AppContext) CheckDue(chatId int64, timedCheck bool) {
 		time.Now().Format(time.RFC3339),
 		"0001-01-01T00:00:00Z",
 	)
+	fmt.Println(err)
+	fmt.Println(rows)
 
 	checkErr(err)
 	defer rows.Close()
