@@ -161,7 +161,7 @@ func timeSinceLabel(d time.Time) string {
 
 // This resets numbers for everyone!
 func (ac *AppContext) renum(chatId int64) {
-	rows, err := ac.db.Query(`SELECT content, created, chat_id FROM reminders`)
+	rows, err := ac.db.Query(`SELECT content, due_dt, chat_id FROM reminders`)
 	checkErr(err)
 	defer rows.Close()
 
@@ -172,7 +172,7 @@ func (ac *AppContext) renum(chatId int64) {
 
 	for rows.Next() {
 		_ = rows.Scan(&c, &d, &cid)
-		arr = append(arr, Reminder{Content: c, Created: d, ChatId: cid})
+		arr = append(arr, Reminder{Content: c, DueDt: d, ChatId: cid})
 	}
 
 	_, err = ac.db.Exec(`DELETE FROM reminders`)
@@ -182,7 +182,7 @@ func (ac *AppContext) renum(chatId int64) {
 	checkErr(err)
 
 	for _, r := range arr {
-		_, err := ac.db.Exec(`INSERT INTO reminders(content, created, chat_id) VALUES ($1, $2, $3)`, r.Content, r.Created, r.ChatId)
+		_, err := ac.db.Exec(`INSERT INTO reminders(content, due_dt, chat_id) VALUES ($1, $2, $3)`, r.Content, r.DueDt, r.ChatId)
 		checkErr(err)
 	}
 
@@ -216,7 +216,6 @@ func (ac *AppContext) CheckDue(chatId int64, timedCheck bool) {
 	}
 	text := s.Join(arr, "\n")
 
-	fmt.Println(text)
 	if len(text) < 10 {
 		text = "No overdues, keke~"
 		if !timedCheck {

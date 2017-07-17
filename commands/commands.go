@@ -95,10 +95,11 @@ func (c *Commands) Extract(t string) (string, string, time.Time) {
 
 	// ddt = now.Parse(r3 + " " + strconv.Itoa(time.now().Year()))
 	ddt, err := now.Parse(r3)
+	loc, _ := time.LoadLocation("Asia/Singapore")
 
 	var r3t time.Time
 	if err == nil {
-		r3t = ddt
+		r3t = ddt.In(loc)
 	} else {
 		r3t = time.Time{}
 	}
