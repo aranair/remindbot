@@ -14,5 +14,7 @@ services:
       - webapp
   timer:
     extends: base
+    volumes:
+      - /var/data:/var/data
     entrypoint: 
       - timer
