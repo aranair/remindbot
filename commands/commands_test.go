@@ -10,7 +10,7 @@ func checkExpected(t *testing.T, actual string, expected string) {
 }
 
 func checkTime(t *testing.T, actual time.Time, expected time.Time) {
-	if actual != expected {
+	if actual.UTC() != expected.UTC() {
 		t.Fatalf("Expected '%s' but got '%s'", expected, actual)
 	}
 }
