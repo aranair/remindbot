@@ -4,11 +4,11 @@ Hazel - A Telegram Bot written in Golang
 
 - Telegram bot
 - Golang
-- Docker
+- Docker / Docker-Compose
 - Sqlite
 - Nginx / Self-Signed SSL Cert
 - Digital Ocean
--
+- Github hooks for deployment
 
 ### Walkthrough of Code
 
@@ -22,8 +22,9 @@ Hazel - A Telegram Bot written in Golang
 ### Commands
 
 - Hazel, anything: `replies with korean Hello :P`
-- remind Do this and this
-- remind me to Do this and this
+- remind buy dinner
+- remind me to do this and this
+- remind me to sleep :9jul 10pm
 - clear 2
 - clearall
 - list
