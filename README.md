@@ -1,17 +1,18 @@
-Hazel - A Telegram Bot written in Golang
+Hazel
+------
 
 ### What is this?
 
-- Telegram bot
-- Golang
+- A Telegram Bot written in Golang
 - Docker / Docker-Compose
-- Sqlite
+- Sqlite3
 - Nginx / Self-Signed SSL Cert
 - Digital Ocean
 - Github hooks for deployment
 
 ### Walkthrough of Code
 
+- **Note: There has been some refactors and reorganization; am working on the new blog post right now.**
 - Part 1: [https://aranair.github.io/posts/2016/12/25/how-to-set-up-golang-telegram-bot-with-webhooks/][1]
 - Part 2: [https://aranair.github.io/posts/2017/01/21/how-i-deployed-golang-bot-on-digital-ocean/][2]
 
