@@ -3,7 +3,8 @@ Hazel
 
 ### What is this?
 
-- A Telegram Bot written in Golang
+- A Telegram Bot written in Golang - Parses messages and records reminders.
+- A Cron-like Bot - Checks for overdue reminders periodically.
 - Docker / Docker-Compose
 - Sqlite3
 - Nginx / Self-Signed SSL Cert
@@ -58,6 +59,7 @@ docker-compose -d
 
 ### External Package Dependencies
 
+- No Telegram-"api" packages were used, just some regex and http.
 - github.com/mattn/go-sqlite3
 - github.com/BurntSushi/toml
 - github.com/justinas/alice
