@@ -163,18 +163,19 @@ func timeSinceLabel(d time.Time) string {
 
 // This resets numbers for everyone!
 func (ac *AppContext) renum(chatId int64) {
-	rows, err := ac.db.Query(`SELECT content, due_dt, chat_id FROM reminders`)
+	rows, err := ac.db.Query(`SELECT content, due_dt, created, chat_id FROM reminders`)
 	checkErr(err)
 	defer rows.Close()
 
 	var arr []Reminder
 	var c string
-	var d time.Time
+	var dt time.Time
+	var ct time.Time
 	var cid int64
 
 	for rows.Next() {
-		_ = rows.Scan(&c, &d, &cid)
-		arr = append(arr, Reminder{Content: c, DueDt: d, ChatId: cid})
+		_ = rows.Scan(&c, &dt, &ct, &cid)
+		arr = append(arr, Reminder{Content: c, DueDt: dt, Created: ct, ChatId: cid})
 	}
 
 	_, err = ac.db.Exec(`DELETE FROM reminders`)
@@ -184,7 +185,7 @@ func (ac *AppContext) renum(chatId int64) {
 	checkErr(err)
 
 	for _, r := range arr {
-		_, err := ac.db.Exec(`INSERT INTO reminders(content, due_dt, chat_id) VALUES ($1, $2, $3)`, r.Content, r.DueDt, r.ChatId)
+		_, err := ac.db.Exec(`INSERT INTO reminders(content, due_dt, created, chat_id) VALUES ($1, $2, $3, $4)`, r.Content, r.DueDt, r.Created, r.ChatId)
 		checkErr(err)
 	}
 
