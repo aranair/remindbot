@@ -98,7 +98,7 @@ func (c *Commands) Extract(t string) (string, string, time.Time) {
 
 	var r3t time.Time
 	if err == nil {
-		sg, _ := time.LoadLocation("Asia/Singapore")
+		sg, _ := time.LoadLocation("America/New_York")
 		utc, _ := time.LoadLocation("UTC")
 		ddt = time.Date(ddt.Year(), ddt.Month(), ddt.Day(), ddt.Hour(), ddt.Minute(), 0, 0, sg)
 		r3t = ddt.In(utc)

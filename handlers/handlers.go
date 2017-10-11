@@ -47,7 +47,7 @@ type Reminder struct {
 }
 
 func NewAppContext(db *sql.DB, conf config.Config, cmds commands.Commands) AppContext {
-	sg, _ := time.LoadLocation("Asia/Singapore")
+	sg, _ := time.LoadLocation("America/New_York")
 	return AppContext{db: db, conf: conf, cmds: cmds, loc: sg}
 }
 
