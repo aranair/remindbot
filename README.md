@@ -13,9 +13,9 @@ Hazel
 
 ### Walkthrough of Code
 
-- **Note: There has been some refactors and reorganization; am working on the new blog post right now.**
 - Part 1: [https://aranair.github.io/posts/2016/12/25/how-to-set-up-golang-telegram-bot-with-webhooks/][1]
 - Part 2: [https://aranair.github.io/posts/2017/01/21/how-i-deployed-golang-bot-on-digital-ocean/][2]
+- Part 3: [https://aranair.github.io/posts/2017/08/20/golang-telegram-bot-migrations-cronjobs-and-refactors/][3]
 
 ### See It in Action
 
@@ -72,3 +72,4 @@ MIT
 
 [1]: https://aranair.github.io/posts/2016/12/25/how-to-set-up-golang-telegram-bot-with-webhooks/
 [2]: https://aranair.github.io/posts/2017/01/21/how-i-deployed-golang-bot-on-digital-ocean/
+[3]: https://aranair.github.io/posts/2017/08/20/golang-telegram-bot-migrations-cronjobs-and-refactors/
