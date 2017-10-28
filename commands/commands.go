@@ -54,6 +54,11 @@ func (c *Commands) Extract(t string) (string, string, time.Time) {
 	var a []string
 	var r1, r2, r3 = "", "", ""
 
+  // sg, _ := time.LoadLocation("Singapore")
+  us, _  := time.LoadLocation("America/New_York")
+  utc, _ := time.LoadLocation("UTC")
+
+
 	a = c.rmt.FindStringSubmatch(t)
 	if len(a) == 4 {
 		r1, r2, r3 = a[1], a[2], a[3]
@@ -94,14 +99,18 @@ func (c *Commands) Extract(t string) (string, string, time.Time) {
 	r3 = s.ToLower(s.TrimSpace(r3))
 
 	// ddt = now.Parse(r3 + " " + strconv.Itoa(time.now().Year()))
+
+  // Replace tmr strings
+  tmrRegex := compileRegexp(`(?im)^tomorrow|tmr|tml`)
+  r3 = tmrRegex.ReplaceAllString(r3, time.Now().AddDate(0, 0, 1).Format("2Jan"))
+
+  todayRegex := compileRegexp(`(?im)today`)
+  r3 = todayRegex.ReplaceAllString(r3, time.Now().Format("2Jan"))
+
 	ddt, err := now.Parse(r3)
 
 	var r3t time.Time
 	if err == nil {
-		// sg, _ := time.LoadLocation("Singapore")
-		us, _  := time.LoadLocation("America/New_York")
-		utc, _ := time.LoadLocation("UTC")
-
 		ddt = time.Date(ddt.Year(), ddt.Month(), ddt.Day(), ddt.Hour(), ddt.Minute(), 0, 0, us)
 		r3t = ddt.In(utc)
 	} else {

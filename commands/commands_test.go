@@ -26,6 +26,43 @@ var cmd string
 var txt string
 var dds time.Time
 
+func TestRemindWithColonToday(t *testing.T) {
+  utc, _ := time.LoadLocation("UTC")
+  now  := time.Now()
+	expected := time.Date(now.Year(), now.Month(), now.Day(), 22, 35, 0, 0, time.Now().Location()).In(utc)
+
+  cmd, txt, dds = cmds.Extract("remind do this:today 10:35pm")
+	checkExpected(t, cmd, "remind")
+	checkExpected(t, txt, "do this")
+	checkTime(t, dds, expected)
+
+  cmd, txt, dds = cmds.Extract("remind do this:ToDay 10:35pm")
+	checkExpected(t, cmd, "remind")
+	checkExpected(t, txt, "do this")
+	checkTime(t, dds, expected)
+}
+
+func TestRemindWithColonTomorrow(t *testing.T) {
+  utc, _ := time.LoadLocation("UTC")
+  now  := time.Now()
+	expected := time.Date(now.Year(), now.Month(), now.Day() + 1, 22, 35, 0, 0, time.Now().Location()).In(utc)
+
+  cmd, txt, dds = cmds.Extract("remind do this:toMorrow 10:35pm")
+	checkExpected(t, cmd, "remind")
+	checkExpected(t, txt, "do this")
+	checkTime(t, dds, expected)
+
+  cmd, txt, dds = cmds.Extract("remind do this:tmr 10:35pm")
+	checkExpected(t, cmd, "remind")
+	checkExpected(t, txt, "do this")
+	checkTime(t, dds, expected)
+
+  cmd, txt, dds = cmds.Extract("remind do this:tml 10:35pm")
+	checkExpected(t, cmd, "remind")
+	checkExpected(t, txt, "do this")
+	checkTime(t, dds, expected)
+}
+
 func TestRemindWithColon(t *testing.T) {
   utc, _ := time.LoadLocation("UTC")
 	expected := time.Date(2017, 6, 9, 22, 30, 0, 0, time.Now().Location()).In(utc)
