@@ -125,7 +125,7 @@ func (ac *AppContext) list(chatId int64) {
 		_ = rows.Scan(&i, &c, &dt)
 		line := "• " + c + " (`" + strconv.Itoa(int(i)) + "`)"
 		if !dt.IsZero() {
-			line = line + " - due " + dt.In(ac.loc).Format("2 Jan 3PM")
+      line = line + " - due " + dt.In(ac.loc).Format("2 Jan 3:04PM")
 		}
 		arr = append(arr, line)
 	}
@@ -216,7 +216,7 @@ func (ac *AppContext) CheckDue(chatId int64, timedCheck bool) {
 		_ = rows.Scan(&i, &c, &dt)
 		line := "• " + c + " (`" + strconv.Itoa(int(i)) + "`)"
 		if !dt.IsZero() {
-			line = line + " - due " + dt.In(ac.loc).Format("2 Jan 3PM")
+      line = line + " - due " + dt.In(ac.loc).Format("2 Jan 3:04PM")
 		}
 		arr = append(arr, line)
 	}
