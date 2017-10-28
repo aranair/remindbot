@@ -38,7 +38,7 @@ Hazel
 ### How to Run?
 
 - Create a `configs.toml` file
-- `docker-compose up`
+- `docker-compose up` or `go run cmd/webapp/main.go`
 
 ### How to Deploy?
 
