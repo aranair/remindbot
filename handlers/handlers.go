@@ -47,8 +47,8 @@ type Reminder struct {
 }
 
 func NewAppContext(db *sql.DB, conf config.Config, cmds commands.Commands) AppContext {
-	sg, _ := time.LoadLocation("America/New_York")
-	return AppContext{db: db, conf: conf, cmds: cmds, loc: sg}
+	us, _ := time.LoadLocation("America/New_York")
+	return AppContext{db: db, conf: conf, cmds: cmds, loc: us}
 }
 
 func (ac *AppContext) CommandHandler(w http.ResponseWriter, r *http.Request) {

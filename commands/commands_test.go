@@ -27,34 +27,35 @@ var txt string
 var dds time.Time
 
 func TestRemindWithColon(t *testing.T) {
-	expected := time.Date(2017, 6, 9, 22, 0, 0, 0, time.Now().Location())
+  utc, _ := time.LoadLocation("UTC")
+	expected := time.Date(2017, 6, 9, 22, 30, 0, 0, time.Now().Location()).In(utc)
 
-	cmd, txt, dds = cmds.Extract("remind do this:9jun 10pm")
+  cmd, txt, dds = cmds.Extract("remind do this:9jun 10:30pm")
 	checkExpected(t, cmd, "remind")
 	checkExpected(t, txt, "do this")
 	checkTime(t, dds, expected)
 
-	cmd, txt, dds = cmds.Extract("remind do this: 9jun 10pm")
+  cmd, txt, dds = cmds.Extract("remind do this: 9jun 10:30pm")
 	checkExpected(t, cmd, "remind")
 	checkExpected(t, txt, "do this")
 	checkTime(t, dds, expected)
 
-	cmd, txt, dds = cmds.Extract("remind do this : 9jun 10pm")
+  cmd, txt, dds = cmds.Extract("remind do this : 9jun 10:30pm")
 	checkExpected(t, cmd, "remind")
 	checkExpected(t, txt, "do this")
 	checkTime(t, dds, expected)
 
-	cmd, txt, dds = cmds.Extract("remind me to do this:9jun 10pm")
+  cmd, txt, dds = cmds.Extract("remind me to do this:9jun 10:30pm")
 	checkExpected(t, cmd, "remind")
 	checkExpected(t, txt, "do this")
 	checkTime(t, dds, expected)
 
-	cmd, txt, dds = cmds.Extract("remind me to do this: 9jun 10pm")
+	cmd, txt, dds = cmds.Extract("remind me to do this: 9jun 10:30pm")
 	checkExpected(t, cmd, "remind")
 	checkExpected(t, txt, "do this")
 	checkTime(t, dds, expected)
 
-	cmd, txt, dds = cmds.Extract("remind me to do this : 9jun 10pm")
+	cmd, txt, dds = cmds.Extract("remind me to do this : 9jun 10:30pm")
 	checkExpected(t, cmd, "remind")
 	checkExpected(t, txt, "do this")
 	checkTime(t, dds, expected)
