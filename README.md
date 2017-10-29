@@ -1,4 +1,4 @@
-Hazel
+jazel
 ------
 
 ### What is this?
@@ -27,6 +27,8 @@ Hazel
 - remind buy dinner
 - remind me to do this and this
 - remind me to sleep :9jul 10pm
+- remind me to buy chocolate :today 10pm
+- remind me to buy a gift :tomorrow 10pm
 - clear 2
 - clearall
 - list
