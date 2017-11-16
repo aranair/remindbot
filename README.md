@@ -1,4 +1,4 @@
-jazel
+Hazel
 ------
 
 ### What is this?
