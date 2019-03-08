@@ -1,0 +1,121 @@
+[debug] Created tunnel using local port: '50404'
+
+[debug] SERVER: "127.0.0.1:50404"
+
+[debug] Original chart version: ""
+[debug] CHART PATH: /Users/homan/go/src/github.com/aranair/remindbot/helm/remindbot
+
+NAME:   remindbot
+REVISION: 1
+RELEASED: Sat Mar  2 22:51:43 2019
+CHART: remindbot-0.1.0
+USER-SUPPLIED VALUES:
+{}
+
+COMPUTED VALUES:
+affinity: {}
+fullnameOverride: ""
+image:
+  pullPolicy: IfNotPresent
+  repository: 886113982751.dkr.ecr.us-east-1.amazonaws.com/remindbot
+  tag: latest
+ingress:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+  enabled: false
+  hosts:
+  - host: null
+    paths: []
+  tls: []
+nameOverride: ""
+nodeSelector: {}
+replicaCount: 1
+resources: {}
+service:
+  port: 8080
+  type: ClusterIP
+tolerations: []
+
+HOOKS:
+---
+# remindbot-test-connection
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "remindbot-test-connection"
+  labels:
+    app.kubernetes.io/name: remindbot
+    helm.sh/chart: remindbot-0.1.0
+    app.kubernetes.io/instance: remindbot
+    app.kubernetes.io/managed-by: Tiller
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['remindbot:8080']
+  restartPolicy: Never
+MANIFEST:
+
+---
+# Source: remindbot/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: remindbot
+  labels:
+    app.kubernetes.io/name: remindbot
+    helm.sh/chart: remindbot-0.1.0
+    app.kubernetes.io/instance: remindbot
+    app.kubernetes.io/managed-by: Tiller
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: remindbot
+    app.kubernetes.io/instance: remindbot
+---
+# Source: remindbot/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: remindbot
+  labels:
+    app.kubernetes.io/name: remindbot
+    helm.sh/chart: remindbot-0.1.0
+    app.kubernetes.io/instance: remindbot
+    app.kubernetes.io/managed-by: Tiller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: remindbot
+      app.kubernetes.io/instance: remindbot
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: remindbot
+        app.kubernetes.io/instance: remindbot
+    spec:
+      containers:
+        - name: remindbot
+          image: "886113982751.dkr.ecr.us-east-1.amazonaws.com/remindbot:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          resources:
+            {}
